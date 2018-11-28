@@ -35,6 +35,7 @@ RUN add-apt-repository -y ppa:openjdk-r/ppa && \
 # Install Hadoop
 ENV HADOOP_VERSION 2.7.3
 RUN curl -O https://archive.apache.org/dist/hadoop/core/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz
+#COPY ./hadoop-2.7.3.tar.gz ./hadoop-2.7.3.tar.gz
 RUN tar xfz ./hadoop-2.7.3.tar.gz
 RUN rm ./hadoop-2.7.3.tar.gz
 RUN mv ./hadoop-2.7.3 /usr/local/hadoop/
@@ -51,9 +52,18 @@ ENV CLASSPATH /usr/local/hadoop/etc/hadoop:/usr/local/hadoop/share/hadoop/common
 
 # Install other dependencies
 ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update -y
 RUN apt-get install -y iputils-ping wget vim krb5-user
 
 # Install Spark
+RUN pip install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com pyspark==2.3.2
+RUN wget http://mirrors.hust.edu.cn/apache/spark/spark-2.3.2/spark-2.3.2-bin-hadoop2.7.tgz
+RUN tar xzvf ./spark-2.3.2-bin-hadoop2.7.tgz
+#ADD ./spark-2.3.2-bin-hadoop2.7/ /spark-2.3.2-bin-hadoop2.7/
+ENV SPARK_HOME /spark-2.3.2-bin-hadoop2.7/
+ENV PATH $PATH:$HADOOP_HOME/bin:$SPARK_HOME/bin
 
+ADD ./examples/ /examples/
 
 CMD ["bash"]
+
