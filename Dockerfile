@@ -59,10 +59,11 @@ ENV SPARK_HOME /spark-2.3.2-bin-hadoop2.7/
 ENV PYSPARK_DRIVER_PYTHON ipython
 ENV PATH $PATH:$HADOOP_HOME/bin:$SPARK_HOME/bin
 RUN pip install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com pyspark==2.3.2
+COPY ./mysql-connector-java-5.1.40.jar $SPARK_HOME/jars/mysql-connector-java-5.1.40.jar
 
 # Install other dependencies
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update -y
+RUN apt-get update -y --fix-missing
 RUN apt-get install -y iputils-ping wget vim krb5-user
 RUN apt-get install -y maven
 RUN pip install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com ipdb pyarrow
