@@ -22,6 +22,7 @@ Setup the cluster.
 ```
 /scripts/prepare_sshd.sh
 /scripts/prepare_hadoop.sh
+```
 
 Run the examples.
 
