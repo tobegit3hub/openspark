@@ -8,7 +8,6 @@ RUN apt-get install -y --no-install-recommends \
         build-essential \
         curl \
         libfreetype6-dev \
-        #libpng12-dev \
         libzmq3-dev \
         pkg-config \
         python \
@@ -17,7 +16,6 @@ RUN apt-get install -y --no-install-recommends \
         software-properties-common \
         unzip
 RUN apt-get install -y iputils-ping wget vim krb5-user git openssh-server maven python-pip
-
 RUN pip install --upgrade pip
 RUN pip --no-cache-dir install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com \
         ipython==5.3.0 \
@@ -28,7 +26,6 @@ RUN pip --no-cache-dir install -i http://mirrors.aliyun.com/pypi/simple/ --trust
         Pillow
 RUN pip install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com ipdb pyarrow
 
-
 # Install Java
 RUN add-apt-repository -y ppa:openjdk-r/ppa && \
     apt-get update && \
@@ -36,13 +33,11 @@ RUN add-apt-repository -y ppa:openjdk-r/ppa && \
     openjdk-8-jdk openjdk-8-jre-headless
 
 # Install Hadoop
-ENV HADOOP_VERSION 2.7.3
-#RUN curl -O https://archive.apache.org/dist/hadoop/core/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz
-#RUN tar xfz ./hadoop-2.7.3.tar.gz
-#RUN rm ./hadoop-2.7.3.tar.gz
-ADD ./hadoop-2.7.3/ ./hadoop-2.7.3/
+RUN curl -O https://archive.apache.org/dist/hadoop/core/hadoop-2.7.3/hadoop-2.7.3.tar.gz
+RUN tar xfz ./hadoop-2.7.3.tar.gz
+RUN rm ./hadoop-2.7.3.tar.gz
 RUN mv ./hadoop-2.7.3 /usr/local/hadoop/
-
+#ADD ./hadoop-2.7.3/ /usr/local/hadoop/
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV HADOOP_HOME /usr/local/hadoop
@@ -58,21 +53,20 @@ ENV CLASSPATH /usr/local/hadoop/etc/hadoop:/usr/local/hadoop/share/hadoop/common
 
 
 # Install Spark
-#RUN wget http://mirrors.hust.edu.cn/apache/spark/spark-2.3.2/spark-2.3.2-bin-hadoop2.7.tgz
-#RUN tar xzvf ./spark-2.3.2-bin-hadoop2.7.tgz
-ADD ./spark-1.6.3-bin-hadoop2.6/ /usr/local/spark-1.6.3-bin-hadoop2.6/
-#ADD ./spark-2.2.0-bin-hadoop2.7/ /usr/local/spark-2.2.0-bin-hadoop2.7/
-#ADD ./spark-2.3.2-bin-hadoop2.7/ /usr/local/spark-2.3.2-bin-hadoop2.7/
-#ADD ./spark-2.3.2-bin-hadoop2.7/ /usr/local/spark/
-ADD ./spark-2.3.0-bin-hadoop2.7/ /usr/local/spark/
+RUN wget https://archive.apache.org/dist/spark/spark-2.3.0/spark-2.3.0-bin-hadoop2.7.tgz
+RUN tar xzvf ./spark-2.3.0-bin-hadoop2.7.tgz
+RUN rm ./spark-2.3.0-bin-hadoop2.7.tgz
+RUN mv ./spark-2.3.0-bin-hadoop2.7 /usr/local/spark/
+#ADD ./spark-2.3.0-bin-hadoop2.7/ /usr/local/spark/
 
-# https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
-# https://archive.apache.org/dist/spark/spark-2.3.0/spark-2.3.0-bin-hadoop2.7.tgz
+RUN wget https://archive.apache.org/dist/spark/spark-1.6.3/spark-1.6.3-bin-hadoop2.6.tgz
+RUN tar xzvf ./spark-1.6.3-bin-hadoop2.6.tgz
+RUN rm ./spark-1.6.3-bin-hadoop2.6.tgz
+RUN mv ./spark-1.6.3-bin-hadoop2.6 /usr/local/spark-1.6.3-bin-hadoop2.6/
+#ADD ./spark-1.6.3-bin-hadoop2.6/ /usr/local/spark-1.6.3-bin-hadoop2.6/
 
 ENV SPARK_HOME /usr/local/spark/
 ENV PATH $PATH:$HADOOP_HOME/bin:$SPARK_HOME/bin
-#RUN pip install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com pyspark==2.3.0
-
 
 # Setup sshd
 RUN mkdir -p /var/run/sshd
@@ -85,7 +79,4 @@ ADD ./local_hadoop_conf/ /usr/local/hadoop/etc/hadoop/
 ADD ./scripts/ /scripts/
 ADD ./examples/ /examples/
 
-#COPY ./mysql-connector-java-5.1.40.jar $SPARK_HOME/jars/mysql-connector-java-5.1.40.jar
-
 CMD ["bash"]
-
