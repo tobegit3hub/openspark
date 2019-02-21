@@ -1,5 +1,6 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
+ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update -y
 
 # Install Python
@@ -7,7 +8,7 @@ RUN apt-get install -y --no-install-recommends \
         build-essential \
         curl \
         libfreetype6-dev \
-        libpng12-dev \
+        #libpng12-dev \
         libzmq3-dev \
         pkg-config \
         python \
@@ -15,8 +16,8 @@ RUN apt-get install -y --no-install-recommends \
         rsync \
         software-properties-common \
         unzip
+RUN apt-get install -y iputils-ping wget vim krb5-user git openssh-server maven python-pip
 
-RUN apt-get install -y python-pip
 RUN pip install --upgrade pip
 RUN pip --no-cache-dir install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com \
         ipython==5.3.0 \
@@ -25,6 +26,8 @@ RUN pip --no-cache-dir install -i http://mirrors.aliyun.com/pypi/simple/ --trust
         sklearn \
         pandas \
         Pillow
+RUN pip install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com ipdb pyarrow
+
 
 # Install Java
 RUN add-apt-repository -y ppa:openjdk-r/ppa && \
@@ -34,11 +37,12 @@ RUN add-apt-repository -y ppa:openjdk-r/ppa && \
 
 # Install Hadoop
 ENV HADOOP_VERSION 2.7.3
-RUN curl -O https://archive.apache.org/dist/hadoop/core/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz
-RUN tar xfz ./hadoop-2.7.3.tar.gz
-RUN rm ./hadoop-2.7.3.tar.gz
-#ADD ./hadoop-2.7.3/ ./hadoop-2.7.3/
+#RUN curl -O https://archive.apache.org/dist/hadoop/core/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz
+#RUN tar xfz ./hadoop-2.7.3.tar.gz
+#RUN rm ./hadoop-2.7.3.tar.gz
+ADD ./hadoop-2.7.3/ ./hadoop-2.7.3/
 RUN mv ./hadoop-2.7.3 /usr/local/hadoop/
+
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV HADOOP_HOME /usr/local/hadoop
@@ -54,32 +58,34 @@ ENV CLASSPATH /usr/local/hadoop/etc/hadoop:/usr/local/hadoop/share/hadoop/common
 
 
 # Install Spark
-RUN wget http://mirrors.hust.edu.cn/apache/spark/spark-2.3.2/spark-2.3.2-bin-hadoop2.7.tgz
-RUN tar xzvf ./spark-2.3.2-bin-hadoop2.7.tgz
-#ADD ./spark-2.3.2-bin-hadoop2.7/ /spark-2.3.2-bin-hadoop2.7/
-ENV SPARK_HOME /spark-2.3.2-bin-hadoop2.7/
-#ENV PYSPARK_DRIVER_PYTHON ipython
+#RUN wget http://mirrors.hust.edu.cn/apache/spark/spark-2.3.2/spark-2.3.2-bin-hadoop2.7.tgz
+#RUN tar xzvf ./spark-2.3.2-bin-hadoop2.7.tgz
+ADD ./spark-1.6.3-bin-hadoop2.6/ /usr/local/spark-1.6.3-bin-hadoop2.6/
+#ADD ./spark-2.2.0-bin-hadoop2.7/ /usr/local/spark-2.2.0-bin-hadoop2.7/
+#ADD ./spark-2.3.2-bin-hadoop2.7/ /usr/local/spark-2.3.2-bin-hadoop2.7/
+#ADD ./spark-2.3.2-bin-hadoop2.7/ /usr/local/spark/
+ADD ./spark-2.3.0-bin-hadoop2.7/ /usr/local/spark/
+
+# https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
+# https://archive.apache.org/dist/spark/spark-2.3.0/spark-2.3.0-bin-hadoop2.7.tgz
+
+ENV SPARK_HOME /usr/local/spark/
 ENV PATH $PATH:$HADOOP_HOME/bin:$SPARK_HOME/bin
-RUN pip install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com pyspark==2.3.2
-COPY ./mysql-connector-java-5.1.40.jar $SPARK_HOME/jars/mysql-connector-java-5.1.40.jar
+#RUN pip install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com pyspark==2.3.0
 
-# Install other dependencies
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update -y --fix-missing
-RUN apt-get install -y iputils-ping wget vim krb5-user git openssh-server maven
-RUN pip install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com ipdb pyarrow
 
-# Setup sshd, refer to https://docs.docker.com/engine/examples/running_ssh_service/#run-a-test_sshd-container
+# Setup sshd
 RUN mkdir -p /var/run/sshd
 RUN echo 'root:root' | chpasswd
 RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
-#RUN ssh-keygen -t rsa -P '' -f /root/.ssh/id_rsa
-#RUN cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 
+ADD ./external_jars/ external_jars/
 ADD ./local_hadoop_conf/ /usr/local/hadoop/etc/hadoop/
 ADD ./scripts/ /scripts/
 ADD ./examples/ /examples/
+
+#COPY ./mysql-connector-java-5.1.40.jar $SPARK_HOME/jars/mysql-connector-java-5.1.40.jar
 
 CMD ["bash"]
 
