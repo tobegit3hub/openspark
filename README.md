@@ -14,7 +14,7 @@ The open environment to run any Spark applications.
 Run the container.
 
 ```
-docker run -it -v /:/host tobegit3hub/openspark bash
+docker run -it --net=host -v /:/host tobegit3hub/openspark bash
 ```
 
 Setup the cluster.
@@ -45,6 +45,16 @@ cd ./spark_examples/dataframe_examples/
 ```
 cd ./spark_examples/dataframe_examples/
 ./create_dataframe_from_memory.sh
+```
+
+If you are using yarn-client mode, make sure you have run container with `--net=host` and set `spark.driver.host` with host's IP for Spark session.
+
+```
+
+val conf = new SparkConf()
+             .setMaster("yarn")
+             .setAppName("foo")
+             .set("spark.driver.host", "$HOST_IP")
 ```
 
 ## Hadoop Cluster
