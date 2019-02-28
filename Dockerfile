@@ -65,6 +65,12 @@ RUN rm ./spark-1.6.3-bin-hadoop2.6.tgz
 RUN mv ./spark-1.6.3-bin-hadoop2.6 /usr/local/spark-1.6.3-bin-hadoop2.6/
 #ADD ./spark-1.6.3-bin-hadoop2.6/ /usr/local/spark-1.6.3-bin-hadoop2.6/
 
+RUN wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
+RUN tar xzvf ./spark-2.4.0-bin-hadoop2.7.tgz
+RUN rm ./spark-2.4.0-bin-hadoop2.7.tgz
+RUN mv ./spark-2.4.0-bin-hadoop2.7 /usr/local/spark-2.4.0-bin-hadoop2.7/
+#ADD ./spark-2.4.0-bin-hadoop2.7/ /usr/local/spark-2.4.0-bin-hadoop2.7/
+
 ENV SPARK_HOME /usr/local/spark/
 ENV PATH $PATH:$HADOOP_HOME/bin:$SPARK_HOME/bin
 

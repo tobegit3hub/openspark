@@ -69,8 +69,9 @@ cp /host/my_hadoop_conf/* /usr/local/hadoop/etc/hadoop/
 
 OpenSpark have supported multiple Spark versions and you can add more in the docker image.
 
-* spark-1.6.3-bin-hadoop2.6
+* spark-2.4.0-bin-hadoop2.7
 * spark-2.3.0-bin-hadoop2.7(default)
+* spark-1.6.3-bin-hadoop2.6
 
 We can switch the Spark version easily.
 
