@@ -73,6 +73,7 @@ RUN mv ./spark-2.4.0-bin-hadoop2.7 /usr/local/spark-2.4.0-bin-hadoop2.7/
 
 ENV SPARK_HOME /usr/local/spark/
 ENV PATH $PATH:$HADOOP_HOME/bin:$SPARK_HOME/bin
+ENV HADOOP_USER_NAME work
 
 # Setup sshd
 RUN mkdir -p /var/run/sshd
