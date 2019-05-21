@@ -71,7 +71,7 @@ RUN rm ./spark-2.4.0-bin-hadoop2.7.tgz
 RUN mv ./spark-2.4.0-bin-hadoop2.7 /usr/local/spark-2.4.0-bin-hadoop2.7/
 #ADD ./spark-2.4.0-bin-hadoop2.7/ /usr/local/spark-2.4.0-bin-hadoop2.7/
 
-#RUN pip install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com pyspark==2.3.0
+RUN pip install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com pyspark==2.3.0
 
 ENV SPARK_HOME /usr/local/spark/
 ENV PATH $PATH:$HADOOP_HOME/bin:$SPARK_HOME/bin
